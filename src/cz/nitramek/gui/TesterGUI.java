@@ -8,13 +8,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  * Created by Martin on 24.10.2015.
  */
 public class TesterGUI {
     private JPanel mainPanel;
-    private JPanel serversPanel;
+    private JPanel udpPanel;
     private JPanel messagePanel;
     private JTextField messageField;
     private JComboBox protocolBox;
@@ -25,6 +26,12 @@ public class TesterGUI {
     private JTextField addressField;
     private JLabel portLabel;
     private JTextField portField;
+    private JTextField udpPortField;
+    private JLabel udpListenerLabel;
+    private JLabel udpPortLabel;
+    private JButton updListenButton;
+    private JTextArea messagesArea;
+    private JScrollPane scrollPane;
 
     UDPListener udpListener;
 
@@ -37,7 +44,30 @@ public class TesterGUI {
                 e1.printStackTrace();
             }
         });
+        updListenButton.addActionListener(e -> {
+            try {
+                onUpdListenButton();
+            } catch (SocketException e1) {
+                e1.printStackTrace();
+            }
+        });
+        udpListener.addMessageListener(message -> {
+            messagesArea.append(message.getMessage() + "\n");
+
+            messagesArea.invalidate();
+        });
     }
+
+    private void onUpdListenButton() throws SocketException {
+        if (!udpListener.isRunning()) {
+            udpListener.start(Integer.parseInt(udpPortField.getText()));
+            updListenButton.setText("Stop");
+        } else {
+            udpListener.stop();
+            updListenButton.setText("Start");
+        }
+    }
+
 
     private void onSendButton() throws IOException {
         InetAddress targetAddress = InetAddress.getByName(addressField.getText());
