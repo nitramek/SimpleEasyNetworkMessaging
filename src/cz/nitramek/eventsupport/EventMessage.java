@@ -8,6 +8,7 @@ public class EventMessage extends EventObject {
 
     public EventMessage(Object source, String message) {
         super(source);
+        this.message = message;
     }
 
     public String getMessage() {
