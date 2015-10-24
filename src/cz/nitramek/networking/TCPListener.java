@@ -21,7 +21,6 @@ public class TCPListener extends BasicListener {
         if (!listeningThread.isRunning()) {
             try {
                 serverSocket = new ServerSocket(port);
-
                 listeningThread = new TCPThread();
                 super.startListening();
             } catch (IOException e) {
@@ -33,12 +32,15 @@ public class TCPListener extends BasicListener {
 
     @Override
     public void stopListening() {
-        try {
-            listeningThread.setRunning(false);
-            serverSocket.close();
-            listeningThread.join();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        if (listeningThread.isRunning()) {
+            try {
+                listeningThread.setRunning(false);
+
+                serverSocket.close();
+                listeningThread.join();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
