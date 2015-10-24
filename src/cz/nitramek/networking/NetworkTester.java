@@ -19,10 +19,10 @@ public class NetworkTester {
         socket.close();
     }
 
-    public static void sendUDPMessage(String message, InetAddress adress, int port) throws IOException {
+    public static void sendUDPMessage(String message, InetAddress address, int port) throws IOException {
         byte[] messageArray = message.getBytes().clone();
         DatagramPacket packet = new DatagramPacket(messageArray, messageArray.length);
-        packet.setAddress(adress);
+        packet.setAddress(address);
         packet.setPort(port);
         DatagramSocket datagramSocket = new DatagramSocket();
         datagramSocket.send(packet);
