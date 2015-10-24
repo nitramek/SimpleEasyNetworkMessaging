@@ -1,6 +1,8 @@
 package cz.nitramek.gui;
 
+import cz.nitramek.networking.Listener;
 import cz.nitramek.networking.NetworkTester;
+import cz.nitramek.networking.TCPListener;
 import cz.nitramek.networking.UDPListener;
 
 import javax.swing.*;
@@ -32,8 +34,14 @@ public class TesterGUI {
     private JButton updListenButton;
     private JTextArea messagesArea;
     private JScrollPane scrollPane;
+    private JPanel messagesPanel;
+    private JPanel tcpPanel;
+    private JButton tcpButton;
+    private JTextField tcpPortField;
 
     UDPListener udpListener;
+
+    Listener tcpListener = new TCPListener();
 
     public TesterGUI() {
         udpListener = new UDPListener();
@@ -55,6 +63,24 @@ public class TesterGUI {
             String strMessage = message.getMessage();
             appendToMessages(String.format("Them: %s\n", strMessage));
         });
+        tcpListener.addMessageListener(message -> {
+            String strMessage = message.getMessage();
+            appendToMessages(String.format("Them: %s\n", strMessage));
+        });
+        tcpButton.addActionListener(e -> {
+            onTcpListenButton();
+        });
+    }
+
+    private void onTcpListenButton() {
+        if (tcpListener.isRunning()) {
+            tcpListener.stopListening();
+            tcpButton.setText("Start");
+        } else {
+            tcpListener.setPort(Integer.parseInt(tcpPortField.getText()));
+            tcpListener.startListening();
+            tcpButton.setText("Stop");
+        }
     }
 
     private void appendToMessages(String message) {
@@ -99,6 +125,7 @@ public class TesterGUI {
             @Override
             public void windowClosing(WindowEvent e) {
                 gui.udpListener.stop();
+                gui.tcpListener.stopListening();
             }
         });
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
