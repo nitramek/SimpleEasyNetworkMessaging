@@ -7,9 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 
-/**
- * Created by Martin on 24.10.2015.
- */
+
 public class NetworkTester {
 
     public static void sendTCPMessage(String message, InetAddress adress, int port) throws IOException {
