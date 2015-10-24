@@ -90,10 +90,11 @@ public class TesterGUI {
 
     private void onUpdListenButton() throws SocketException {
         if (!udpListener.isRunning()) {
-            udpListener.start(Integer.parseInt(udpPortField.getText()));
+            udpListener.setPort(Integer.parseInt(udpPortField.getText()));
+            udpListener.startListening();
             updListenButton.setText("Stop");
         } else {
-            udpListener.stop();
+            udpListener.stopListening();
             updListenButton.setText("Start");
         }
     }
@@ -124,7 +125,7 @@ public class TesterGUI {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                gui.udpListener.stop();
+                gui.udpListener.stopListening();
                 gui.tcpListener.stopListening();
             }
         });

@@ -1,59 +1,66 @@
 package cz.nitramek.networking;
 
-import cz.nitramek.eventsupport.MessageListener;
-import cz.nitramek.eventsupport.MessageListenerSupport;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
 
-public class UDPListener extends AbstractListener {
+public class UDPListener extends BasicListener {
     private DatagramSocket socket;
-    private MessageListenerSupport messageListenerSupport = new MessageListenerSupport();
+    private int port;
 
-    public void removeMessageListener(MessageListener listener) {
-        messageListenerSupport.removeMessageListener(listener);
+    public UDPListener() {
+        listeningThread = new UDPThread();
     }
 
-    public void addMessageListener(MessageListener listener) {
-        messageListenerSupport.addMessageListener(listener);
-    }
 
-    Thread listeningThread = new Thread(this);
-
-    public void start(int port) throws SocketException {
-        socket = new DatagramSocket(port);
-        setRunning(true);
-        listeningThread.start();
-    }
-
-    public void stop() {
-        if (isRunning()) {
-            setRunning(false);
-
+    @Override
+    public void startListening() {
+        if (!listeningThread.isRunning()) {
             try {
+                socket = new DatagramSocket(port);
+                listeningThread = new UDPThread();
+                super.startListening();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void stopListening() {
+        if (listeningThread.isRunning()) {
+            try {
+                listeningThread.setRunning(false);
                 socket.close();
                 listeningThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
-
 
     @Override
-    public void doStuff() {
-        byte[] buffer = new byte[256];
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        try {
-            socket.receive(packet);
-            messageListenerSupport.fireMessageEvent(this, new String(packet.getData(), packet.getOffset(), packet.getLength()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            setRunning(false);
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    class UDPThread extends ServiceThread {
+
+        @Override
+        protected void doStuff() {
+            try {
+                byte[] buffer = new byte[256];
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                socket.receive(packet);
+                fireMessageListeners(UDPListener.this, new String(packet.getData(), packet.getOffset(), packet.getLength()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }
