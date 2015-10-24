@@ -10,7 +10,7 @@ import java.net.SocketException;
 
 public class UDPListener extends AbstractListener {
     private DatagramSocket socket;
-    MessageListenerSupport messageListenerSupport = new MessageListenerSupport();
+    public MessageListenerSupport messageListenerSupport = new MessageListenerSupport();
 
     Thread listeningThread = new Thread(this);
 
@@ -21,9 +21,11 @@ public class UDPListener extends AbstractListener {
     }
 
     public void stop() {
-        if (listeningThread.getState().equals(Thread.State.RUNNABLE)) {
+        if (isRunning()) {
             setRunning(false);
+
             try {
+                socket.close();
                 listeningThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
