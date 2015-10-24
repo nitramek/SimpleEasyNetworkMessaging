@@ -52,10 +52,14 @@ public class TesterGUI {
             }
         });
         udpListener.addMessageListener(message -> {
-            messagesArea.append(message.getMessage() + "\n");
-
-            messagesArea.invalidate();
+            String strMessage = message.getMessage();
+            appendToMessages(String.format("Them: %s\n", strMessage));
         });
+    }
+
+    private void appendToMessages(String message) {
+        messagesArea.append(message);
+        messagesArea.invalidate();
     }
 
     private void onUpdListenButton() throws SocketException {
@@ -73,6 +77,7 @@ public class TesterGUI {
         InetAddress targetAddress = InetAddress.getByName(addressField.getText());
         int targetPort = Integer.parseInt(portField.getText());
         String message = messageField.getText();
+        appendToMessages(String.format("You: %s\n", messageField.getText()));
         if (protocolBox.getSelectedItem().equals("UDP")) {
             NetworkTester.sendUDPMessage(
                     message,
