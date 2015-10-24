@@ -50,7 +50,7 @@ public class UDPListener extends AbstractListener {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
             socket.receive(packet);
-            messageListenerSupport.fireMessageEvent(this, new String(packet.getData()));
+            messageListenerSupport.fireMessageEvent(this, new String(packet.getData(), packet.getOffset(), packet.getLength()));
         } catch (IOException e) {
             e.printStackTrace();
             setRunning(false);
