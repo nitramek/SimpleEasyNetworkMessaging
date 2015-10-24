@@ -1,5 +1,6 @@
 package cz.nitramek.networking;
 
+import cz.nitramek.eventsupport.MessageListener;
 import cz.nitramek.eventsupport.MessageListenerSupport;
 
 import java.io.IOException;
@@ -10,7 +11,15 @@ import java.net.SocketException;
 
 public class UDPListener extends AbstractListener {
     private DatagramSocket socket;
-    public MessageListenerSupport messageListenerSupport = new MessageListenerSupport();
+    private MessageListenerSupport messageListenerSupport = new MessageListenerSupport();
+
+    public void removeMessageListener(MessageListener listener) {
+        messageListenerSupport.removeMessageListener(listener);
+    }
+
+    public void addMessageListener(MessageListener listener) {
+        messageListenerSupport.addMessageListener(listener);
+    }
 
     Thread listeningThread = new Thread(this);
 
